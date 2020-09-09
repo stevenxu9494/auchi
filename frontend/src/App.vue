@@ -11,7 +11,4 @@ export default {
 </script>
 
 <style>
-.safeArea {
-  padding-bottom: 34px!important;
-}
 </style>

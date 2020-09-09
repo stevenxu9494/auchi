@@ -1,22 +1,23 @@
 <template>
   <div class="page">
-    <van-row class="header_nav">
-      <van-col>
-        <div class="logo">澳驰严选</div>
-      </van-col>
-      <van-col>
-        <van-search class="index_header_search" placeholder="请输入搜索关键词" v-model="search_v" />
-      </van-col>
-      <van-col>
-        <div class="loginBtn">登录</div>
-      </van-col>
-    </van-row>
+    <van-sticky>
+      <van-row class="header_nav">
+        <van-col>
+          <div class="logo">澳驰严选</div>
+        </van-col>
+        <van-col>
+          <van-search class="index_header_search" placeholder="请输入搜索关键词" v-model="search_v" />
+        </van-col>
+        <van-col>
+          <div class="loginBtn">登录</div>
+        </van-col>
+      </van-row>
 
-    <!-- 滚动的Tab按钮列表 -->
-    <van-tabs class="category_nav" title-active-color="red" v-model="activeName" @click="onClickTabs">
-      <van-tab v-for="(item, index) in tabBtnList"  :key="index" :title="item.name" :name="item.name">
-      </van-tab>
-    </van-tabs>
+      <!-- 滚动的Tab按钮列表 -->
+      <van-tabs class="category_nav" title-active-color="red" v-model="activeName" @click="goodsDetail">
+        <van-tab v-for="(item, index) in tabBtnList"  :key="index" :title="item.name" :name="item.name"></van-tab>
+      </van-tabs>
+    </van-sticky>
 
     <!-- 轮播图 -->
     <van-swipe class="banner" :autoplay="3000">
@@ -45,10 +46,10 @@
     <div class="goodsListDiv">
       <h1>
         <label>好货优选</label>
-        <a href="#">查看全部></a>
+        <span @click="toCategory">查看全部></span>
       </h1>
     </div>
-    <van-grid :column-num="3" class="goodsList">
+    <van-grid :column-num="3" class="goodsList" :center = "false">
       <van-grid-item v-for="(value, index) in currentGoods" :key="index">
         <img :src=value.thumb_url alt="">
         <div> {{value.name}} </div>
@@ -56,18 +57,14 @@
     </van-grid>
 
     <!-- 吸底footer -->
-    <van-tabbar v-model="active"  @change="onChangeTabbars">
-      <van-tabbar-item icon="home-o">首页</van-tabbar-item>
-      <van-tabbar-item icon="search" dot>分类</van-tabbar-item>
-      <van-tabbar-item icon="shopping-cart" badge="5">购物车</van-tabbar-item>
-      <van-tabbar-item icon="friends">我的</van-tabbar-item>
-    </van-tabbar>
+    <footer_bar></footer_bar>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
 import { get, post } from '../utils/index'
+import footer_bar from './footer_bar'
 export default {
   name: 'appIndex',
   data () {
@@ -75,29 +72,24 @@ export default {
       search_v: '',
       tabBtnList: [],
       banners: [],
-      active: 0,
       activeName: "奶粉",
       currentGoods: []
     }
   },
+  components: {footer_bar},
   mounted() {
     this.goodsDetail()
   },
   methods: {
     async goodsDetail () {
       const data = await get('/index/index',{activeName: this.activeName})
-      console.log(data)
       this.tabBtnList = data.newCategoryList
       this.banners = data.banner
       this.currentGoods = data.goodsList
     },
-    onClickTabs() {
-      this.goodsDetail()
-    },
-    onChangeTabbars(index) {
-      console.log({ type: 'primary', message: index });
+    toCategory () {
+      this.$router.push('/category/' + this.activeName)
     }
-
   }
 }
 </script>
@@ -110,6 +102,7 @@ export default {
   overflow: hidden;
   position: relative;
   .header_nav {
+    background: #fff;
     .logo{      
       margin: .2rem 0 0 .15rem;
       width: 1.22rem;
@@ -140,7 +133,10 @@ export default {
     }
   }
   .banner {
-    height:3rem;
+    img {
+    height:3rem;    
+    width: 100%;
+    }    
   }
   .service_info{
     text-align: center;
@@ -164,7 +160,7 @@ export default {
         float: left;       
         font-size: .3rem;
       }
-      a {
+      span {
         float: right;       
         font-size: .25rem;
         color:inherit;
@@ -179,6 +175,4 @@ export default {
     }
   }
 }
-
-
 </style>
