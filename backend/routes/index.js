@@ -7,10 +7,8 @@ const controllers = require('../controllers/index')
 router.get('/index/index', controllers.home.index.index)
 
 
-// // 分类相关的接口
-// router.get('/category/categoryNav', controllers.category.index.categoryNav)
-// router.get('/category/indexaction', controllers.category.index.indexAction)
-// router.get('/category/currentaction', controllers.category.index.currentAction)
+// 分类相关的接口
+router.get('/category/currentaction', controllers.category.index.currentAction)
 
 
 // // 搜索相关的接口
@@ -19,8 +17,8 @@ router.get('/index/index', controllers.home.index.index)
 // router.post('/search/clearhistoryAction', controllers.search.index.clearHistoryAction) // 清除搜索历史
 // router.get('/search/helperaction', controllers.search.index.helperAction) // 搜索提示
 
-// // 商品
-// router.get('/goods/detailaction', controllers.goods.index.detailAction)
+// 商品
+router.get('/goods/detailaction', controllers.goods.index.detailAction)
 // router.get('/goods/goodsList', controllers.goods.index.goodsList)
 
 

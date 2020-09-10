@@ -2,9 +2,9 @@
   <div>
     <van-tabbar v-model="active"  @change="onChangeTabbars" class="footer" route>
       <van-tabbar-item to="/" icon="home-o">首页</van-tabbar-item>
-      <van-tabbar-item to="/category/:cate" icon="search" dot>分类</van-tabbar-item>
-      <van-tabbar-item icon="shopping-cart" badge="5">购物车</van-tabbar-item>
-      <van-tabbar-item icon="friends">我的</van-tabbar-item>
+      <van-tabbar-item to="/category/奶粉" icon="search" dot>分类</van-tabbar-item>
+      <van-tabbar-item to="/cart" icon="shopping-cart" badge="5">购物车</van-tabbar-item>
+      <van-tabbar-item to="/my" icon="friends">我的</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>

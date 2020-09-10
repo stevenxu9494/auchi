@@ -50,9 +50,9 @@
       </h1>
     </div>
     <van-grid :column-num="3" class="goodsList" :center = "false">
-      <van-grid-item v-for="(value, index) in currentGoods" :key="index">
+      <van-grid-item v-for="(value, index) in currentGoods" :key="index" @click="toGoods(value.goods_id)">
         <img :src=value.thumb_url alt="">
-        <div> {{value.name}} </div>
+        <div class="van-multi-ellipsis--l2"> {{value.name}} </div>
       </van-grid-item>
     </van-grid>
 
@@ -86,9 +86,23 @@ export default {
       this.tabBtnList = data.newCategoryList
       this.banners = data.banner
       this.currentGoods = data.goodsList
+      console.log(this.currentGoods)
     },
     toCategory () {
-      this.$router.push('/category/' + this.activeName)
+      this.$router.push({
+        name: "category",
+        params: {
+          name: this.activeName
+        }
+      })
+    },
+    toGoods (id) {
+      this.$router.push({
+        name: "goods",
+        params: {
+          id: id
+        }
+      })
     }
   }
 }
@@ -142,6 +156,7 @@ export default {
     text-align: center;
     height: .6rem;
     line-height: .6rem;
+    background: #f4f4f4;
     // icon {
 
     // }
