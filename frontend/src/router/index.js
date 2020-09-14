@@ -6,6 +6,7 @@ import category from '@/components/category'
 import cart from '@/components/cart'
 import my from '@/components/my'
 import goods from '@/components/goods'
+import login from '@/components/login'
 
 Vue.use(Router)
 
@@ -35,6 +36,11 @@ export default new Router({
       path: '/goods/:id',
       name: 'goods',
       component: goods
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: login
     }
   ]
 })

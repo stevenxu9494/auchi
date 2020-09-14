@@ -1,12 +1,14 @@
 <template>
   <div>
     <!-- 导航栏 -->
-    <van-nav-bar class="navbarTop"
-      :title=info.name
-      left-text="返回"
-      left-arrow
-      @click-left="onClickLeft"
-    />
+    <van-sticky>
+      <van-nav-bar class="navbarTop"
+        :title=info.name
+        left-text="返回"
+        left-arrow
+        @click-left="onClickLeft"
+      />
+    </van-sticky>
     <!-- 货物主视图 -->
     <div class="picture">
       <img :src="info.image_url" />
@@ -29,15 +31,21 @@
     <!-- 选择规格数量 -->
     <van-cell is-link @click="showPopup">请选择规格数量</van-cell>
     <!-- 货物详情图片展示 -->
-    <div class="details" v-for="item in info.detail" :key="item">
-      <img :src=item alt="" />
+    <div v-if="intro" class="details">
+      <div v-for="item in info.detail" :key="item">
+        <img :src=item alt="" />
+      </div>
+    </div>
+    <div v-else class="details">
+      <p>暂无介绍~</p>
     </div>
     <!-- 吸底footer -->
-    <van-goods-action class="bottom-fixed">
-      <van-goods-action-icon icon="star" text="已收藏" color="#ff5000" />
-      <van-goods-action-icon icon="cart-o" text="购物车" />
-      <van-goods-action-button type="warning" text="加入购物车" />
-      <van-goods-action-button type="danger" text="立即购买" />
+    <van-goods-action class="bottom-fixed" route>
+      <van-goods-action-icon v-if="collectFlag" icon="star" text="已收藏" color="#ff5000" @click="collect"/>
+      <van-goods-action-icon v-else icon="star" text="未收藏" color="#C0C0C0" @click="collect"/>
+      <van-goods-action-icon to="/cart" icon="cart-o" text="购物车" />
+      <van-goods-action-button type="warning" text="加入购物车" @click="showPopup" />
+      <van-goods-action-button type="danger" text="立即购买" @click="showPopup" />
     </van-goods-action>
     <!-- 弹出层->货物规格数量选择 -->
     <van-popup
@@ -45,7 +53,32 @@
       closeable
       close-icon="close"
       position="bottom"
-      :style="{ height: '30%' }">
+      :style="{ height: '35%' }">
+      <div class="top">
+        <div class="left">
+          <img :src="info.thumb_url" alt="">
+        </div>
+        <div class="right">
+          <div>
+            <p>{{info.name}}</p>
+            <p v-if="info.price !== 0" class="price">¥{{info.retail_price}}</p>
+            <p v-else class="price">价格波动，请联系客服</p>
+            <p>请选择数量</p>
+            <div class="count">
+              <div class="cut" @click="reduce">-</div>
+              <input type="text" class="number" v-model="number" disabled="false">
+              <div class="add" @click="add">+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <van-goods-action class="bottom-fixed" route>
+        <van-goods-action-icon v-if="collectFlag" icon="star" text="已收藏" color="#ff5000" @click="collect"/>
+        <van-goods-action-icon v-else icon="star" text="未收藏" color="#C0C0C0" @click="collect"/>
+        <van-goods-action-icon to="/cart" icon="cart-o" text="购物车" />
+        <van-goods-action-button @click="addCart" type="warning" text="加入购物车" />
+        <van-goods-action-button @click="buy" type="danger" text="立即购买" />
+      </van-goods-action>
     </van-popup>
   </div>
 </template>
@@ -59,7 +92,10 @@ export default {
     return {
       curItem: 0,
       info: {},
-      show: false
+      show: false,
+      intro: false,
+      number: 0,
+      collectFlag: false
     }
   },
   mounted () {
@@ -73,12 +109,48 @@ export default {
       })
       this.info = data.info[0]
       this.info.detail = this.info.detail.split(',')
+      if (this.info.detail[0] !== "") {
+        this.intro = true
+      }
     },
     onClickLeft () {
-      this.$router.go(-1)
+      this.$router.back();
     },
     showPopup() {
-      this.show = true;
+      this.show = !this.show;
+    },
+    add () {
+      this.number += 1
+    },
+    reduce () {
+      if (this.number > 1) {
+        this.number -= 1
+      } else {
+        return false
+      }
+    },
+    collect () {
+      if(this.collectFlag == false) {
+        this.collectFlag = !this.collectFlag
+      }else {
+        this.collectFlag = !this.collectFlag
+      }
+    },
+    buy () {
+      if (this.show) {
+        if (this.number == 0) {
+          this.$toast({message: '请选择商品数量',
+                      forbidClick: true});
+        }
+      }
+    },
+    addCart () {
+      if (this.show) {
+        if (this.number == 0) {
+          this.$toast({message: '请选择商品数量',
+                      forbidClick: true});
+        }
+      }
     }
   }
 }
@@ -115,13 +187,14 @@ export default {
 }
 .goods-info{
   width: 100%;
-  height: 2.5rem;
+  height: 3rem;
   background: #fff;
   margin: 0 auto;
   border-bottom: 0.05rem solid #f4f4f4;
   .c{
     height: 100%;
     p{
+      padding: .2rem .2rem 0 .2rem;
       display: block;
       text-align: center;
     }
@@ -143,5 +216,84 @@ export default {
   img {
     width: 100%;
   }  
+  p {
+    font-size: .5rem;
+    text-align: center;
+  }
+}
+.top{
+  display: flex;
+  // margin-bottom: 35rpx;
+  position: relative;
+  .left{
+    float: left;
+    height: 2.2rem;
+    width: 2.2rem;
+    margin-right: 30rpx;
+    img{
+      padding-top: .4rem;
+      float: left;
+      height: 2.2rem;
+      width: 2.2rem;
+    }
+  }
+  .right{
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    padding: .5rem .5rem 0 0 ;
+    p{
+      width: 100%;
+      font-size: .22rem;
+      line-height: .28rem;
+    }
+    p:nth-child(2){
+      color: #b4282d;
+    }
+    .count{
+      width: 3rem;
+      height: .55rem;
+      line-height: .55rem;
+      display: flex;
+      border: .01rem solid #ccc;
+      margin-top: 0.2rem;
+      div{
+        font-size: .3rem;
+        width: 1rem;
+        text-align: center;
+      }
+      input{
+        font-size: .3rem;
+        flex: 1;
+        width: 100%;
+        text-align: center;
+      }
+    }
+  }
+}
+.b{
+  padding: .22rem;
+  p {
+    font-size:.22rem;
+  }
+  .count{
+    width: 3rem;
+    height: .55rem;
+    line-height: .55rem;
+    display: flex;
+    border: .01rem solid #ccc;
+    margin-top: 0.2rem;
+    div{
+      font-size: .3rem;
+      width: 1rem;
+      text-align: center;
+    }
+    input{
+      font-size: .3rem;
+      flex: 1;
+      width: 100%;
+      text-align: center;
+    }
+  }
 }
 </style>
