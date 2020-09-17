@@ -11,7 +11,6 @@
     }
     var rem = width /6.4;
     docEl.style.fontSize = rem + 'px';
-    console.log(docEl.style.fontSize)
   }
   win.addEventListener('resize', function() {
     clearTimeout(tid);

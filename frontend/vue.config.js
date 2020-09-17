@@ -3,6 +3,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 module.exports = {
+  lintOnSave: false,
   runtimeCompiler: true, //是否使用包含运行时编译器的 Vue 构建版本
   publicPath: '',
   productionSourceMap: false, //不在production环境使用SourceMap

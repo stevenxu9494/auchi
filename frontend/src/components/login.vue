@@ -26,7 +26,7 @@
                          required
                          @click.stop="changeImage(1)"
                          autocomplete />
-              <van-field v-model="imgCaptcha"
+              <!-- <van-field v-model="imgCaptcha"
                          center
                          clearable
                          maxlength="4"
@@ -36,8 +36,12 @@
                      alt=""
                      @click="getCaptcha"
                      slot="button">
-              </van-field>
+              </van-field> -->
             </van-cell-group>
+            <van-button type="info"
+                        size="large"
+                        style="margin-top:.3rem"
+                        @click='login'>登录</van-button>
           </van-tab>
           <!-- 注册 -->
           <van-tab title="注册">
@@ -87,6 +91,8 @@
 /* eslint-disable */
 import { get, post } from '../utils/index'
 import footer_bar from './footer_bar'
+// 引入vuex
+import { mapState, mapActions, mapMutations } from 'vuex'
 export default {
   name: 'login',
   data () {
@@ -97,17 +103,94 @@ export default {
       register_pwd: '',
       login_userName: '',
       login_password: '',
-      imgCaptcha: '',
-      captchaUrl: 'http://demo.itlike.com/web/xlmc/api/captcha'
+      // imgCaptcha: '',
+      // captchaUrl: 'http://demo.itlike.com/web/xlmc/api/captcha'
     }
   },
   mounted () {
+    console.log(this.syncuserInfo())
   },
   components: {footer_bar},
   methods: {
+    // 0. mapActions 同步用户信息
+    ...mapActions(['syncuserInfo']),
+    // 1. 登录
+    async login () {
+      if (this.login_userName.length < 1) {
+        this.$toast ({
+          message: '用户名不能为空',
+          duration: 800
+        })
+      } else if (this.login_password.length < 0) {
+        this.$toast({
+          message: '密码不能为空',
+          duration: 800
+        })
+      } else if (this.login_password.length < 6) {
+        this.$toast({
+          message: '密码至少6位',
+          duration: 800
+        })
+      } else {
+        const userInfo = await get('/login/index',{registerUserName: this.login_userName})
+        if (userInfo.isRegistered) {
+          const data = await post('/login/login',{
+            username: this.login_userName,
+            password: this.login_password
+          })
+          if (data) {
+            this.syncuserInfo(data.data.userDetail[0])
+            console.log(data.data.userDetail[0])
+            this.$router.back();
+          }
+        } else {
+          this.$toast({
+          message: '用户名或密码错误',
+          duration: 800})
+        }
+      }
+    },
+    // 2. 注册
+    async register () {
+      if (this.register_userName.length < 1) {
+        this.$toast ({
+          message: '用户名不能为空',
+          duration: 800
+        })
+      } else if (this.register_pwd.length < 0) {
+        this.$toast({
+          message: '密码不能为空',
+          duration: 800
+        })
+      } else if (this.register_pwd.length < 6) {
+        this.$toast({
+          message: '密码至少6位',
+          duration: 800
+        })
+      } else {
+        const userInfo = await get('/login/index',{registerUserName: this.register_userName})
+        if (userInfo.isRegistered) {
+          this.$toast({
+          message: '用户名已注册，请登录',
+          duration: 800})
+        } else {
+          const data = await post('/login/registration',{
+            username: this.register_userName,
+            password: this.register_pwd
+          })
+          if (data) {
+            this.syncuserInfo(data.data.userDetail[0])
+            this.$router.back();
+          }
+        }
+      }
+    },
+    // 3. 关闭页面后退
     close () {
       this.$router.back();
     },
+
+    // 4. 换熊猫
     changeImage (index) {
       if (index == 0) {
         this.imageURL = require('../assets/greeting.png')
@@ -117,14 +200,28 @@ export default {
         this.imageURL = require('../assets/normal.png')
       }
     },
-    getCaptcha () {
-      // // 获取验证码的标签
-      this.captchaUrl ='http://demo.itlike.com/web/xlmc/api/captcha?time=' + new Date()
-    },
-    register () {
 
+    // // 5. 刷新验证码
+    // getCaptcha () {
+    //   // // 获取验证码的标签
+    //   this.captchaUrl ='http://demo.itlike.com/web/xlmc/api/captcha?time=' + new Date()
+    // },
+    
+    // 7. 用户协议
+    agreement (index) {
+      if (index == 0) {
+        this.$toast({
+          message: '用户协议',
+          duration: 800
+        })
+      } else {
+        this.$toast({
+          message: '隐私策略',
+          duration: 800
+        })
+      }
     },
-    // 第三方验证
+    // 9. 第三方验证
     thirdLogin (value) {
       if (value == 0) {
         this.$toast({
@@ -158,7 +255,7 @@ export default {
     align-items: center;
     justify-content: center;
     position: fixed;
-    opacity: 0.95;
+    opacity: 0.94;
     top: 0;
     left: 0;
     right: 0;

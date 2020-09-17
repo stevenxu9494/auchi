@@ -10,6 +10,10 @@ router.get('/index/index', controllers.home.index.index)
 // 分类相关的接口
 router.get('/category/currentaction', controllers.category.index.currentAction)
 
+// 注册相关的接口.
+router.get('/login/index', controllers.login.index.index)
+router.post('/login/registration', controllers.login.index.registration)
+router.post('/login/login', controllers.login.index.login)
 
 // // 搜索相关的接口
 // router.get('/search/indexaction', controllers.search.index.indexAction)

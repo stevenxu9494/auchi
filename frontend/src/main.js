@@ -4,6 +4,7 @@ import './assets/rem'
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import store from './store/store'
 import './icons' // icon
 
 import { Button, Row, Col, Search, Tab, Tabs, Swipe, SwipeItem, Lazyload, Tabbar, TabbarItem, Grid, GridItem, Toast, Sticky, Notify, Sidebar, SidebarItem, GoodsAction, GoodsActionIcon, GoodsActionButton, NavBar, Popup, Cell, CellGroup, Icon, Field, Divider } from 'vant'
@@ -16,6 +17,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })
