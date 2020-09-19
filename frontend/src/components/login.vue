@@ -108,7 +108,6 @@ export default {
     }
   },
   mounted () {
-    console.log(this.syncuserInfo())
   },
   components: {footer_bar},
   methods: {
@@ -138,14 +137,17 @@ export default {
             username: this.login_userName,
             password: this.login_password
           })
-          if (data) {
+          if (data.data != "身份验证失败") {
             this.syncuserInfo(data.data.userDetail[0])
-            console.log(data.data.userDetail[0])
             this.$router.back();
+          } else {
+            this.$toast({
+            message: '用户名或密码错误，请重试',
+            duration: 800})
           }
         } else {
           this.$toast({
-          message: '用户名或密码错误',
+          message: '用户名或密码错误，请重试',
           duration: 800})
         }
       }

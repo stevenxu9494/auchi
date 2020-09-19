@@ -22,16 +22,6 @@ async function index(ctx) {
 // 登录
 async function login(ctx) {
   const { username, password } = ctx.request.body
-  //生成token
-  const token = jwt.sign(
-    {
-        name: ctx.request.body //需要放到token的参数
-    },
-    'xuchi', //随便一点内容，加密的密文，私钥对应着公钥
-    {
-        expiresIn: 60 * 60 //60分钟到期时间
-    }
-  )
 
   // 查询新用户数据
   let userDetail = {}
@@ -42,12 +32,11 @@ async function login(ctx) {
   }
 
   if (userDetail[0].password == password) {
-    userDetail[0]['token']=token
     ctx.body = {
       data: {
         'userDetail': userDetail
       },
-      message: '注册成功'
+      message: '登录成功'
     }
   }else {
     ctx.body = {
@@ -60,20 +49,20 @@ async function login(ctx) {
 // 注册
 async function registration(ctx) {
   const { username, password } = ctx.request.body
+  var content = {
+    "username": username,
+    "password": password
+  }
   //生成token
   const token = jwt.sign(
-    {
-        name: ctx.request.body //需要放到token的参数
-    },
-    'xuchi', //随便一点内容，加密的密文，私钥对应着公钥
-    {
-        expiresIn: 60 * 60 //60分钟到期时间
-    }
+    content, //需要放到token的参数
+    'xuchi'//随便一点内容，加密的密文，私钥对应着公钥
   )
   // 插入新用户数据
   await mysql('auchi_user').insert({
     'username': username,
-    'password': password
+    'password': password,
+    'h5_token': token
   })
 
   // 查询新用户数据
@@ -83,7 +72,6 @@ async function registration(ctx) {
       'username': username
     }).select()
   }
-  userDetail[0]['token']=token
   ctx.body = {
     data: {
       'userDetail': userDetail

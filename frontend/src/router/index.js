@@ -65,21 +65,28 @@ const router = new Router({
   ]
 })
 
-let userInfo = JSON.parse(getLocalStore('userInfo'))
+
 
 //路由守卫
-router.beforeEach((to, from, next) => {
-  if (to.meta.requireAuth) {
-      if (userInfo.token) {
-          next()
-      } else {
-          next({
-              path: '/login'
-          })
-      }
-  } else {
-      next()
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   if (to.meta.requireAuth) {
+//     if (JSON.parse(getLocalStore('userInfo')!="{}")){
+//       let userInfo = JSON.parse(getLocalStore('userInfo'))
+//       if (userInfo.token) {
+//           next()
+//       } else {
+//           next({
+//               path: '/login'
+//           })
+//       }
+//     }else {
+//       next({
+//         path: '/login'
+//       })
+//     }
+//   } else {
+//       next()
+//   }
+// })
 
 export default router
