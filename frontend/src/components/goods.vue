@@ -86,6 +86,7 @@
 <script>
 /* eslint-disable */
 import { get, post } from '../utils/index'
+import { getLocalStore } from '../config/global'
 export default {
   name: 'goods',
   data () {
@@ -95,19 +96,24 @@ export default {
       show: false,
       intro: false,
       number: 0,
-      collectFlag: false
+      collectFlag: false,
+      userInfo: {}
     }
   },
   mounted () {
     this.curItem = this.$route.params.id
+    this.userInfo = JSON.parse(getLocalStore('userInfo'))
+    console.log(this.userInfo)
     this.getGoodsDetail()
   },
   methods: {
     async getGoodsDetail () {
       const data = await get('/goods/detailaction',{
-        goodsId: this.curItem
+        goodsId: this.curItem,
+        userId: this.userInfo.id
       })
       this.info = data.info[0]
+      this.collectFlag = data.collected
       this.info.detail = this.info.detail.split(',')
       if (this.info.detail[0] !== "") {
         this.intro = true
@@ -129,11 +135,25 @@ export default {
         return false
       }
     },
-    collect () {
+    async collect () {
       if(this.collectFlag == false) {
         this.collectFlag = !this.collectFlag
+        const data = await post('/goods/collection',{
+        goodsId: this.curItem,
+        userId: this.userInfo.id
+      })
+        if (data) {
+          this.$toast.success('收藏成功');
+        }
       }else {
         this.collectFlag = !this.collectFlag
+        const data = await post('/goods/collection',{
+        goodsId: this.curItem,
+        userId: this.userInfo.id
+      })
+        if (data) {
+          this.$toast.success('取消收藏');
+        }
       }
     },
     buy () {

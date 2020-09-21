@@ -4,7 +4,7 @@
     <van-nav-bar title="个人中心"
                  :fixed=true
                  :border=false
-                 style="height:.75rem" />
+                 style="height:.75rem;color:white;" />
     <!-- 头像和昵称 -->
     <van-cell-group style="margin-top:.72rem">
       <van-cell style="background-color: #3bba63;color:#FFF;"

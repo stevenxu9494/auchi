@@ -86,7 +86,6 @@ export default {
       this.tabBtnList = data.newCategoryList
       this.banners = data.banner
       this.currentGoods = data.goodsList
-      console.log(this.currentGoods)
     },
     toCategory () {
       this.$router.push({

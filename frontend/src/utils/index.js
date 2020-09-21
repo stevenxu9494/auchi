@@ -22,7 +22,6 @@ export function get(url, data){
     duration: 0,
     className: 'van-loading-custom',
   }); 
-  console.log(data)
   return new Promise((resolve, reject) =>{             
       axios.get(url, {                
         params: data
