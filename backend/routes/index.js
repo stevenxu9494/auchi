@@ -37,7 +37,7 @@ router.post('/goods/collection', controllers.goods.index.collection)
 
 // 购物车相关的接口
 router.post('/cart/addCart', controllers.cart.index.addCart)
-// router.get('/cart/cartList', controllers.cart.index.cartList)
+router.get('/cart/cartList', controllers.cart.index.cartList)
 
 
 // // 收货地址相关的接口

@@ -179,7 +179,8 @@ export default {
             retailPrice: this.info.retail_price, 
             number: this.number, 
             thumbUrl: this.info.thumb_url, 
-            imageUrl: this.info.image_url
+            imageUrl: this.info.image_url,
+            checked: true
           })
           if (data) {
             this.$toast.success('成功加入购物车');

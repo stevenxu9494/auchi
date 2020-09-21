@@ -7,7 +7,7 @@
       <div class="clearCart"
            :style="selectedGoodsCount==0?'color:grey':'color:#45c763'"
            @click="clearCart"
-           v-show="isShowEmptyCart">购物车空空滴~</div>
+           v-show="isShowEmptyCart">删除</div>
     </header>
     <!-- 购物车没有商品 -->
     <div class="cartWrapper">
@@ -19,6 +19,49 @@
         <div class="title">购物车空空滴~</div>
         <router-link to="/"
                      class="goHome">去逛逛</router-link>
+      </div>
+      <!-- 购物车有数据 -->
+      <div  class="contentWrapper"
+            v-show="isShowEmptyCart">
+        <div class="contentWrapperList"
+             v-for="(goods,index) in cartList"
+             :key="index">
+          <section>
+            <div class="shopCartListCon">
+              <div class="left">
+                <a href="javaScript:;"
+                   class="cartCheckBox"
+                   :checked="goods.checked"
+                   @click.stop="changeColor(index, goods.goods_id)"></a>
+              </div>
+              <div class="center">
+                <img :src="goods.thumb_url">
+              </div>
+              <div class="right">
+                <a>{{goods.goods_name}}</a>
+                <div class="bottomContent">
+                  <p class="shopPrice">￥{{goods.retail_price}}</p>
+                  <div class="shopDeal">
+                    <span @click="reduceGoods(goods.goods_id,goods.number)">-</span>
+                    <input type="number"
+                           disabled
+                           v-model="goods.number">
+                    <span @click="addGoods(goods.goods_id,goods.goods_name, goods.thumb_url, goods.retail_price)">+</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <!-- 提交订单 -->
+        <van-submit-bar :price="allPrice"
+                        :button-text="submitBarText"
+                        @submit="onSubmit"
+                        :disabled="!(selectedGoodNum>0)"
+                        v-show="isShowEmptyCart">
+          <van-checkbox v-model="isCheckedAll"
+                        checked-color='#45c763'>全选</van-checkbox>
+        </van-submit-bar>
       </div>
       <!-- 猜你喜欢 -->
       <van-divider :style="{ color: 'black', borderColor: 'grey', padding: '0 16px' }">
@@ -33,21 +76,105 @@
 <script>
 /* eslint-disable */
 import { get, post } from '../utils/index'
+import { getLocalStore } from '../config/global'
 import footer_bar from './footer_bar'
 export default {
   name: 'my',
   data () {
     return {
       isShowEmptyCart: false,
-      selectedGoodsCount: 0
+      selectedGoodsCount: 0,
+      selectedGoodNum: 0, 
+      cartList: [],
+      Listids: [],
+      allcheck: false
     }
   },
   mounted () {
+    this.userInfo = JSON.parse(getLocalStore('userInfo'))
+    this.getCartList ()
   },
   components: {footer_bar},
   methods: {
+    // 1. 清空购物车
     clearCart () {
+    },
+    // 2. 选择商品转变颜色
+    changeColor (index, id) {
+      if (this.Listids[index]) {
+        this.cartList[index].checked = ! this.cartList[index].checked
+        this.$set(this.Listids, index, false)
+        console.log(this.cartList)
+      } else {
+        this.cartList[index].checked = ! this.cartList[index].checked
+        this.$set(this.Listids, index, id)
+        console.log(this.cartList)
+      }
+    },
+    // 3. 页面初始化
+    async getCartList () {
+      const data = await get('/cart/cartList',{
+        userId: this.userInfo.id
+      })
+      if (data) {
+        this.isShowEmptyCart = true
+        this.cartList = data.data
+        for (let i = 0; i < this.cartList.length; i++) {
+          if (this.cartList[i].checked) {
+            this.$set(this.Listids, i, this.cartList[i].goods_id)
+          } else {
+            this.$set(this.Listids, i, false)
+          }
+        }
+      }
+    },
+    onSubmit () {
 
+    },
+    // 增加数量
+    addGoods () {
+
+    },
+    // 减少数量
+    reduceGoods () {
+
+    }
+  },
+  computed: {
+    // 结算数量
+    submitBarText () {
+      let count = 0
+      for (let i = 0; i < this.cartList.length; i++) {
+        if (this.Listids[i]) {
+          count += parseInt(this.cartList[i].number)
+        }
+      }
+      this.selectedGoodNum = count
+      return `结算` + (count ? `(${count})` : '');
+    },
+    // 实时查看是否全选
+    isCheckedAll () {
+      let number = 0
+      for (let i = 0; i < this.Listids.length; i++) {
+        if (this.Listids[i]) {
+          number++
+        }
+      }
+      if (number == this.cartList.length && number !== 0) {
+        return true
+      } else {
+        return false
+      }
+    },
+    // 实时计算总价
+    allPrice () {
+      let Price = 0
+      for (let i = 0; i < this.Listids.length; i++) {
+        if (this.Listids[i]) {
+          Price += this.cartList[i].retail_price * this.cartList[i].number
+        }
+      }
+      return Price * 100
     }
   }
 }

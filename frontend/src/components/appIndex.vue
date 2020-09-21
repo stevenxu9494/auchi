@@ -53,6 +53,8 @@
       <van-grid-item v-for="(value, index) in currentGoods" :key="index" @click="toGoods(value.goods_id)">
         <img :src=value.thumb_url alt="">
         <div class="van-multi-ellipsis--l2"> {{value.name}} </div>
+        <div style="padding-top:0.15rem;"><span style="color:red;">￥{{value.retail_price}} </span><span style="text-decoration: line-through;">￥{{Math.ceil(value.retail_price * 1.1 / 10) * 10}}</span></div>
+        <div ></div>
       </van-grid-item>
     </van-grid>
 

@@ -3,7 +3,7 @@ const { mysql } = require('../../mysql')
 // 加入购物车
 async function addCart(ctx) {
   // 货物/用户信息
-  let { goodsId, userId, goodsName, retailPrice, number, thumbUrl, imageUrl } = ctx.request.body
+  let { goodsId, userId, goodsName, retailPrice, number, thumbUrl, imageUrl, checked } = ctx.request.body
   // const goodsId = ctx.query.goodsId
   // const userId = ctx.query.userId
   // const goodsName = ctx.query.goodsName
@@ -14,6 +14,11 @@ async function addCart(ctx) {
   goodsId = parseInt(goodsId)
   retailPrice = parseFloat(retailPrice)
   number = parseInt(number)
+  if (checked) {
+    checked = 1
+  }else {
+    checked = 0
+  }
   // 判断购物车是否包含此数据
   const haveGoods = await mysql('auchi_cart').where({
     'user_id': userId,
@@ -33,7 +38,8 @@ async function addCart(ctx) {
       'goods_name': goodsName,
       'retail_price': retailPrice,
       'thumb_url': thumbUrl,
-      'image_url': imageUrl
+      'image_url': imageUrl,
+      checked
     })
   } else {
     const oldNumber = await mysql('auchi_cart').where({
@@ -46,7 +52,8 @@ async function addCart(ctx) {
       'goods_id': goodsId
     }).update({
       // 'number': oldNumber[0].number + number
-      'number': number
+      'number': number,
+      checked
     })
   }
   ctx.body = {
@@ -54,6 +61,18 @@ async function addCart(ctx) {
   }
 }
 
+// 获取购物车列表
+async function cartList(ctx) {
+  const { userId } = ctx.query
+  
+  const cartList = await mysql('auchi_cart').where({
+    'user_id': userId
+  }).select()
+  ctx.body = {
+    data: cartList
+  }
+}
 module.exports = {
-  addCart
+  addCart,
+  cartList
 }
