@@ -18,9 +18,20 @@ async function detailAction(ctx) {
   if (iscollect.length > 0) {
     collected = true
   }
+
+  // 判断是否在购物车
+  const inCart = await mysql('auchi_cart').where({
+    'user_id': userId,
+    'goods_id': goodsId
+  }).select()
+  let number = 0
+  if (inCart.length > 0) {
+    number = inCart[0].number
+  }
   ctx.body = {
     'info': info,
     'collected': collected,
+    'number': number
   }
 }
 

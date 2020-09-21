@@ -1,0 +1,59 @@
+const { mysql } = require('../../mysql')
+
+// 加入购物车
+async function addCart(ctx) {
+  // 货物/用户信息
+  let { goodsId, userId, goodsName, retailPrice, number, thumbUrl, imageUrl } = ctx.request.body
+  // const goodsId = ctx.query.goodsId
+  // const userId = ctx.query.userId
+  // const goodsName = ctx.query.goodsName
+  // const retailPrice = ctx.query.retailPrice
+  // const number = ctx.query.number
+  // const thumbUrl = ctx.query.thumbUrl
+  // const imageUrl = ctx.query.imageUrl
+  goodsId = parseInt(goodsId)
+  retailPrice = parseFloat(retailPrice)
+  number = parseInt(number)
+  // 判断购物车是否包含此数据
+  const haveGoods = await mysql('auchi_cart').where({
+    'user_id': userId,
+    'goods_id': goodsId
+  }).select()
+  if (haveGoods.length === 0) { 
+    // const goods = await mysql('nideshop_goods').where({
+    //   'id': goodsId
+    // }).select()
+    // // console.log(goods);
+    // const { retail_price, name, list_pic_url } = goods[0]
+    // 如果不存在
+    await mysql('auchi_cart').insert({
+      'user_id': userId,
+      'goods_id': goodsId,
+      number,
+      'goods_name': goodsName,
+      'retail_price': retailPrice,
+      'thumb_url': thumbUrl,
+      'image_url': imageUrl
+    })
+  } else {
+    const oldNumber = await mysql('auchi_cart').where({
+      'user_id': userId,
+      'goods_id': goodsId
+    }).column('number').select()
+    // 更新数据
+    await mysql('auchi_cart').where({
+      'user_id': userId,
+      'goods_id': goodsId
+    }).update({
+      // 'number': oldNumber[0].number + number
+      'number': number
+    })
+  }
+  ctx.body = {
+    data: 'success'
+  }
+}
+
+module.exports = {
+  addCart
+}

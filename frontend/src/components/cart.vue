@@ -191,7 +191,6 @@ export default {
             font-size: 0.24rem;
           }
           .shopDeal span {
-            display: inline-block;
             width: .3rem;
             height: .36rem;
             line-height: .36rem;

@@ -103,7 +103,6 @@ export default {
   mounted () {
     this.curItem = this.$route.params.id
     this.userInfo = JSON.parse(getLocalStore('userInfo'))
-    console.log(this.userInfo)
     this.getGoodsDetail()
   },
   methods: {
@@ -113,7 +112,9 @@ export default {
         userId: this.userInfo.id
       })
       this.info = data.info[0]
+      console.log(this.info)
       this.collectFlag = data.collected
+      this.number = data.number
       this.info.detail = this.info.detail.split(',')
       if (this.info.detail[0] !== "") {
         this.intro = true
@@ -164,12 +165,30 @@ export default {
         }
       }
     },
-    addCart () {
+    async addCart () {
       if (this.show) {
         if (this.number == 0) {
           this.$toast({message: '请选择商品数量',
                       forbidClick: true});
+          return false
+        }else {
+          const data = await post('/cart/addCart',{
+            goodsId: this.curItem,
+            userId: this.userInfo.id,
+            goodsName: this.info.name, 
+            retailPrice: this.info.retail_price, 
+            number: this.number, 
+            thumbUrl: this.info.thumb_url, 
+            imageUrl: this.info.image_url
+          })
+          if (data) {
+            this.$toast.success('成功加入购物车');
+          } else {
+            this.$toast.fail('加入购物车失败');
+          }
         }
+      }else {
+        this.show = !this.show
       }
     }
   }

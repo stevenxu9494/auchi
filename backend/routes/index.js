@@ -35,8 +35,8 @@ router.post('/goods/collection', controllers.goods.index.collection)
 // router.get('/order/detailAction', controllers.order.index.detailAction)
 
 
-// // 购物车相关的接口
-// router.post('cart/addCart', controllers.cart.index.addCart)
+// 购物车相关的接口
+router.post('/cart/addCart', controllers.cart.index.addCart)
 // router.get('/cart/cartList', controllers.cart.index.cartList)
 
 
