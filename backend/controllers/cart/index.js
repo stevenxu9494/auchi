@@ -60,11 +60,55 @@ async function addCart(ctx) {
     data: 'success'
   }
 }
+// 移出购物车
+async function removeCart(ctx) {
+  // 货物/用户信息
+  let { goodsId, userId} = ctx.request.body
 
+  // 判断购物车是否包含此数据
+  const haveGoods = await mysql('auchi_cart').where({
+    'user_id': userId,
+    'goods_id': goodsId
+  }).select()
+  if (haveGoods.length === 0) { 
+    // 如果不存在
+    return false
+  } else {
+    // 删除数据
+    await mysql('auchi_cart').where({
+      'user_id': userId,
+      'goods_id': goodsId
+    }).del()
+  }
+  ctx.body = {
+    data: 'success'
+  }
+}
+// 全部移出购物车
+async function removeAll(ctx) {
+  // 货物/用户信息
+  let { userId} = ctx.request.body
+
+  // 判断购物车是否包含此数据
+  const haveGoods = await mysql('auchi_cart').where({
+    'user_id': userId
+  }).select()
+  if (haveGoods.length === 0) { 
+    // 如果不存在
+    return false
+  } else {
+    // 删除数据
+    await mysql('auchi_cart').where({
+      'user_id': userId
+    }).del()
+  }
+  ctx.body = {
+    data: 'success'
+  }
+}
 // 获取购物车列表
 async function cartList(ctx) {
   const { userId } = ctx.query
-  
   const cartList = await mysql('auchi_cart').where({
     'user_id': userId
   }).select()
@@ -74,5 +118,7 @@ async function cartList(ctx) {
 }
 module.exports = {
   addCart,
+  removeCart,
+  removeAll,
   cartList
 }

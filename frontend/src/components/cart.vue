@@ -7,7 +7,7 @@
       <div class="clearCart"
            :style="selectedGoodsCount==0?'color:grey':'color:#45c763'"
            @click="clearCart"
-           v-show="isShowEmptyCart">删除</div>
+           v-show="isShowEmptyCart">清空</div>
     </header>
     <!-- 购物车没有商品 -->
     <div class="cartWrapper">
@@ -31,7 +31,7 @@
               <div class="left">
                 <a href="javaScript:;"
                    class="cartCheckBox"
-                   :checked="goods.checked"
+                   :checked="Listids[index]"
                    @click.stop="changeColor(index, goods.goods_id)"></a>
               </div>
               <div class="center">
@@ -42,11 +42,11 @@
                 <div class="bottomContent">
                   <p class="shopPrice">￥{{goods.retail_price}}</p>
                   <div class="shopDeal">
-                    <span @click="reduceGoods(goods.goods_id,goods.number)">-</span>
+                    <span @click="reduceGoods(index, goods.goods_id, goods.number, goods.user_id)">-</span>
                     <input type="number"
                            disabled
                            v-model="goods.number">
-                    <span @click="addGoods(goods.goods_id,goods.goods_name, goods.thumb_url, goods.retail_price)">+</span>
+                    <span @click="addGoods(index, goods.goods_id, goods.number, goods.user_id)">+</span>
                   </div>
                 </div>
               </div>
@@ -82,10 +82,10 @@ export default {
   name: 'my',
   data () {
     return {
-      isShowEmptyCart: false,
       selectedGoodsCount: 0,
       selectedGoodNum: 0, 
       cartList: [],
+      userInfo: {},
       Listids: [],
       allcheck: false
     }
@@ -98,6 +98,24 @@ export default {
   methods: {
     // 1. 清空购物车
     clearCart () {
+      this.$dialog.confirm({
+          title: '温馨提示',
+          message: '确定删除所有商品吗?'
+        }).then(async () => {
+          // on confirm 确认删除
+          const data = await post('/cart/removeAll',{
+            userId: this.userInfo.id
+          })
+          if (data) {
+            this.$toast.success('删除成功');
+            this.cartList = []
+            this.Listids = []
+          } else {
+            this.$toast.fail('删除失败');
+          }
+        }).catch(() => {
+          // on cancel
+        });
     },
     // 2. 选择商品转变颜色
     changeColor (index, id) {
@@ -117,7 +135,6 @@ export default {
         userId: this.userInfo.id
       })
       if (data) {
-        this.isShowEmptyCart = true
         this.cartList = data.data
         for (let i = 0; i < this.cartList.length; i++) {
           if (this.cartList[i].checked) {
@@ -126,22 +143,65 @@ export default {
             this.$set(this.Listids, i, false)
           }
         }
+      } else {
+        this.isShowEmptyCart = true
+      }
+    },
+    // 4. 全选
+    allCheck () {
+      // 先清空选择
+      this.Listids = []
+      if (this.allcheck) {
+        this.allcheck = false
+      } else {
+        this.allcheck = true
+        // 全部选择
+        for (let i = 0; i < this.cartList.length; i++) {
+          const element = this.cartList[i]
+          this.Listids.push(element.goods_id)
+        }
       }
     },
     onSubmit () {
 
     },
-    // 增加数量
-    addGoods () {
-
+    // 5. 增加数量
+    addGoods (index, goods_id, number, user_id) {
+      this.cartList[index].number ++
     },
-    // 减少数量
-    reduceGoods () {
+    // 6. 减少数量
+    reduceGoods (index, goods_id, number, user_id) {
+      if (this.cartList[index].number == 1) {
+        this.$dialog.confirm({
+          title: '温馨提示',
+          message: '确定删除该商品吗?'
+        }).then(async () => {
+          // on confirm 确认删除
+          const data = await post('/cart/removeCart',{
+            goodsId: goods_id,
+            userId: user_id
+          })
+          if (data) {
+            this.$toast.success('删除成功');
+            this.cartList.splice(index, 1)
+            this.Listids.splice(index, 1)
+          } else {
+            this.$toast.fail('删除失败');
+          }
+        }).catch(() => {
+          // on cancel
+        });
+      } else if (this.cartList[index].number > 1) {
+        this.cartList[index].number --
+      }
+    },
+    // 7. 更新后台数据
+    async update () {
 
     }
   },
   computed: {
-    // 结算数量
+    // 1. 结算数量
     submitBarText () {
       let count = 0
       for (let i = 0; i < this.cartList.length; i++) {
@@ -152,21 +212,40 @@ export default {
       this.selectedGoodNum = count
       return `结算` + (count ? `(${count})` : '');
     },
-    // 实时查看是否全选
-    isCheckedAll () {
-      let number = 0
-      for (let i = 0; i < this.Listids.length; i++) {
-        if (this.Listids[i]) {
-          number++
+    // 2. 实时查看是否全选
+    isCheckedAll: {
+      get () {
+        let number = 0
+        for (let i = 0; i < this.Listids.length; i++) {
+          if (this.Listids[i]) {
+            number++
+          }
+        }
+        if (number == this.cartList.length && number !== 0) {
+          this.allcheck = true
+          return true
+        } else {
+          this.allcheck = false
+          return false
+        }
+      },
+      set (value) {
+        let isCheckedAll = !value;
+        this.Listids = []
+        console.log(this.Listids)
+        if (this.allcheck) {
+          this.allcheck = false
+        } else {
+          this.allcheck = true
+          // 全部选择
+          for (let i = 0; i < this.cartList.length; i++) {
+            const element = this.cartList[i]
+            this.Listids.push(element.goods_id)
+          }
         }
       }
-      if (number == this.cartList.length && number !== 0) {
-        return true
-      } else {
-        return false
-      }
     },
-    // 实时计算总价
+    // 3. 实时计算总价
     allPrice () {
       let Price = 0
       for (let i = 0; i < this.Listids.length; i++) {
@@ -175,7 +254,19 @@ export default {
         }
       }
       return Price * 100
-    }
+    },
+    // 4.是否显示空购物车样式
+    isShowEmptyCart () {
+      let isshow = false;
+      if (this.totalCount > 0) {
+        isshow = true;
+      }
+      return isshow;
+    },
+    // 5.计算Cart的数量
+    totalCount () {
+      return Object.keys(this.cartList).length;
+    },
   }
 }
 </script>
