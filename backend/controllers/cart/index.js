@@ -4,13 +4,7 @@ const { mysql } = require('../../mysql')
 async function addCart(ctx) {
   // 货物/用户信息
   let { goodsId, userId, goodsName, retailPrice, number, thumbUrl, imageUrl, checked } = ctx.request.body
-  // const goodsId = ctx.query.goodsId
-  // const userId = ctx.query.userId
-  // const goodsName = ctx.query.goodsName
-  // const retailPrice = ctx.query.retailPrice
-  // const number = ctx.query.number
-  // const thumbUrl = ctx.query.thumbUrl
-  // const imageUrl = ctx.query.imageUrl
+  
   goodsId = parseInt(goodsId)
   retailPrice = parseFloat(retailPrice)
   number = parseInt(number)

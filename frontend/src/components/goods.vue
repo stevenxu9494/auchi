@@ -1,14 +1,12 @@
 <template>
   <div>
     <!-- 导航栏 -->
-    <van-sticky>
-      <van-nav-bar class="navbarTop"
-        :title=info.name
-        left-text="返回"
-        left-arrow
-        @click-left="onClickLeft"
-      />
-    </van-sticky>
+    <van-nav-bar class="navbarTop"
+      :title=info.name
+      :fixed=true
+      left-arrow
+      @click-left="onClickLeft"
+    />
     <!-- 货物主视图 -->
     <div class="picture">
       <img :src="info.image_url" />

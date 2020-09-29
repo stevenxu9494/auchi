@@ -13,6 +13,10 @@ import cart from '@/components/cart'
 import my from '@/components/my'
 import goods from '@/components/goods'
 import login from '@/components/login'
+import order from '@/components/order'
+import myAddress from '@/components/myAddress'
+import addAddress from '@/components/addAddress'
+import editAddress from '@/components/editAddress'
 
 Vue.use(Router)
 
@@ -61,6 +65,27 @@ const router = new Router({
       path: '/login',
       name: 'login',
       component: login
+    },
+    {
+      path: '/order',
+      name: 'order',
+      component: order
+    },
+    {
+      path: '/myAddress',
+      name: 'myAddress',
+      component: myAddress
+    },
+    {
+      path: '/addAddress',
+      name: 'addAddress',
+      component: addAddress
+    },
+    {
+      path: '/editAddress',
+      name: 'editAddress',
+      component: editAddress,
+      props: (route) => ({ content: route.query.content}) 
     }
   ]
 })

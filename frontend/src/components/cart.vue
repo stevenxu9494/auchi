@@ -122,11 +122,9 @@ export default {
       if (this.Listids[index]) {
         this.cartList[index].checked = ! this.cartList[index].checked
         this.$set(this.Listids, index, false)
-        console.log(this.cartList)
       } else {
         this.cartList[index].checked = ! this.cartList[index].checked
         this.$set(this.Listids, index, id)
-        console.log(this.cartList)
       }
     },
     // 3. 页面初始化
@@ -162,9 +160,6 @@ export default {
         }
       }
     },
-    onSubmit () {
-
-    },
     // 5. 增加数量
     addGoods (index, goods_id, number, user_id) {
       this.cartList[index].number ++
@@ -195,10 +190,37 @@ export default {
         this.cartList[index].number --
       }
     },
-    // 7. 更新后台数据
-    async update () {
-
-    }
+    // 7. 下单
+    async onSubmit () {
+      // 去掉数组中空的false的
+      var newgoodsid = [];
+      var newgoodsnumber = [];
+      var newthumburl = [];
+      for (let i = 0; i < this.Listids.length; i++) {
+        const element = this.Listids[i];
+        const newnumber = this.cartList[i].number
+        const thumburl = this.cartList[i].thumb_url
+        if (element) {
+          newgoodsid.push(element);
+          newgoodsnumber.push(newnumber);
+          newthumburl.push(thumburl);
+        }
+      }
+      var goodsId = newgoodsid.join(",");
+      var goodsNumber = newgoodsnumber.join(",");
+      var thumbUrl = newthumburl.join(",");
+      console.log(thumbUrl)
+      const data = await post("/order/submitAction", {
+        goodsId: goodsId,
+        userId: this.userInfo.id,
+        thumbUrl: thumbUrl,
+        goodsNumber: goodsNumber,
+        allPrice: this.allPrice / 100
+      });
+      if (data) {
+        this.$router.push('/order');
+      }
+    },
   },
   computed: {
     // 1. 结算数量

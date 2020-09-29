@@ -4,7 +4,6 @@ import QS from 'qs'; // 引入qs模块，用来序列化post类型的数据，�
 // vant的toast提示框组件，大家可根据自己的ui组件更改。
 import { Toast } from 'vant'; 
 import store from '../store/store'
-
 axios.defaults.baseURL = 'http://localhost:9988/xc';
 
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';

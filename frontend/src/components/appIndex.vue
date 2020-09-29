@@ -140,11 +140,11 @@ export default {
       margin: .14rem 0 0 .2rem;
       width: .8rem;
       height: .5rem;
-      color: #f00;
+      color: #07c160;
       line-height: .5rem;
       text-align: center;
       border-radius: .1rem;
-      border: 1px solid #f00;
+      border: 1px solid#07c160;
     }
   }
   .banner {

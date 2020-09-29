@@ -4,7 +4,7 @@ export default {
     // shopCart: {},
     // 用户信息
     userInfo: {},
-    // // 收货地址
-    // shippingAddress: [],
+    // 收货地址
+    shippingAddress: [],
     // language: getLanguage()
 }
