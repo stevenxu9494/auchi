@@ -8,8 +8,11 @@
         <van-col>
           <van-search class="index_header_search" placeholder="请输入搜索关键词" v-model="search_v" />
         </van-col>
-        <van-col>
-          <div class="loginBtn">登录</div>
+        <van-col v-if="showLoginButton">
+          <div class="loginBtn" @click="login">登录</div>
+        </van-col>
+        <van-col v-else>
+          <img src="@/assets/logo.jpg" alt="" style="width: .66rem; margin-left: 0.22rem; margin-top: 0.11rem;" @click="toCart">
         </van-col>
       </van-row>
 
@@ -67,6 +70,7 @@
 /* eslint-disable */
 import { get, post } from '../utils/index'
 import footer_bar from './footer_bar'
+import { setLocalStore, getLocalStore } from '../config/global'
 export default {
   name: 'appIndex',
   data () {
@@ -74,13 +78,23 @@ export default {
       search_v: '',
       tabBtnList: [],
       banners: [],
+      showLoginButton: true,
       activeName: "奶粉",
       currentGoods: []
     }
   },
   components: {footer_bar},
   mounted() {
-    this.goodsDetail()
+    var userInfo = JSON.parse(getLocalStore('userInfo'))
+    if (userInfo) {
+      this.showLoginButton = false
+    } else {
+      this.showLoginButton = true
+    }
+    console.log(this.currentGoods.length)
+    if (this.currentGoods.length == 0) {
+      this.goodsDetail()
+    }
   },
   methods: {
     async goodsDetail () {
@@ -104,6 +118,12 @@ export default {
           id: id
         }
       })
+    },
+    login () {
+      this.$router.push({name:"login"})
+    },
+    toCart () {
+      this.$router.push({name:"cart"})
     }
   }
 }

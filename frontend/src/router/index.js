@@ -17,6 +17,7 @@ import order from '@/components/order'
 import myAddress from '@/components/myAddress'
 import addAddress from '@/components/addAddress'
 import editAddress from '@/components/editAddress'
+import couponList from '@/components/CouponList'
 
 Vue.use(Router)
 
@@ -86,6 +87,11 @@ const router = new Router({
       name: 'editAddress',
       component: editAddress,
       props: (route) => ({ content: route.query.content}) 
+    },
+    {
+      path: '/couponList',
+      name: 'couponList',
+      component: couponList
     }
   ]
 })

@@ -4,7 +4,7 @@
     <van-nav-bar title="个人中心"
                  :fixed=true
                  :border=false
-                 style="height:.75rem;color:white;" />
+                 style="height:.75rem" />
     <!-- 头像和昵称 -->
     <van-cell-group style="margin-top:.72rem">
       <van-cell style="background-color: #3bba63;color:#FFF;"
@@ -44,6 +44,50 @@
         </template>
       </van-cell>
     </van-cell-group>
+    <!-- 订单相关-->
+    <van-cell-group>
+      <van-cell title="我的订单"
+                icon="label"
+                value="查看全部订单"
+                is-link
+                @click="goTomyOrder(-1)">
+      </van-cell>
+      <van-grid :border=false>
+        <van-grid-item v-for="(order,index) in orderData"
+                       :key="index"
+                       :icon="order.icon"
+                       :text="order.title"
+                       @click="goTomyOrder(index)" />
+      </van-grid>
+    </van-cell-group>
+    <!-- 优惠券、收货地址 -->
+    <van-cell-group style="margin-top:0.1rem">
+      <van-cell title="我的优惠券"
+                icon="gold-coin"
+                :value="userInfo.h5_token?'2':''"
+                @click="goToPage('couponList')"
+                is-link />
+      <van-cell title="我的收货地址"
+                icon="todo-list"
+                is-link
+                @click="goToPage('myAddress')" />
+    </van-cell-group>
+    <!-- 客服、意见反馈 -->
+    <van-cell-group style="margin-top:0.08rem">
+      <!-- 联系客服 -->
+      <van-cell title="联系客服"
+                icon="phone"
+                value="客服时间07:00-22:00"
+                is-link
+                @click="onFeedBack" />
+      <!-- 意见反馈 -->
+      <van-cell title="意见反馈"
+                icon="comment-circle"
+                is-link
+                @click="onFeedBack" />
+    </van-cell-group>
+    <!-- 当前版本 -->
+    <div class="version">当前版本：1.0.0</div>
     <!-- 吸底footer -->
     <footer_bar></footer_bar>
   </div>
@@ -66,7 +110,14 @@ export default {
         male: require('../assets/mine/male.png')
       },
       // 用户信息
-      userInfo: {}
+      userInfo: {},
+      // 订单状态
+      orderData: [
+        { icon: 'cart-circle-o', title: '待支付' },
+        { icon: 'gift-o', title: '待收货' },
+        { icon: 'smile-comment-o', title: '待评价' },
+        { icon: 'cash-back-record', title: '售后/退款' }
+      ],
     }
   },
   mounted () {
@@ -79,6 +130,23 @@ export default {
   methods: {
     goToPage (name) {
       this.$router.push({ name });
+    },
+    goTomyOrder (index) {
+      // if (index !== 3) {
+      //   return this.$router.push({ name: "myOrder", params: { active: index + 1 } });
+      // }
+      // 跳转到售后退款界面
+      this.$toast({
+        message: "功能暂未实现",
+        duration: 1500
+      })
+    },
+    // 意见反馈
+    onFeedBack () {
+      this.$toast({
+        message: "功能暂未实现",
+        duration: 1500
+      })
     },
   }
 }
@@ -98,9 +166,8 @@ export default {
     color: grey;
     line-height: .6rem;
   }
-  .van-nav-bar {
+  .van-nav-bar--fixed {
     background-color: #3bba63;
-    font-size: 0.18rem;
   }
   .van-nav-bar__title {
     color: white;
